@@ -1,2 +1,7 @@
-nl.qiy.openid.op.spi.impl
-nl.qiy.openid.op.spi.impl.demo
+nl.qiy.oic.op
+nl.qiy.oic.op.api
+nl.qiy.oic.op.api.param
+nl.qiy.oic.op.domain
+nl.qiy.oic.op.qiy
+nl.qiy.oic.op.service
+nl.qiy.oic.op.service.spi
