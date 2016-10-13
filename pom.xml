@@ -76,7 +76,7 @@
 				<configuration>
 					<server>github</server>
 					<message>Creating site for ${project.version}</message>
-					<repositoryName>op-sdk-lib</repositoryName>
+					<repositoryName>${project.artifactId}</repositoryName>
 					<repositoryOwner>digital-me</repositoryOwner>
 				</configuration>
 				<executions>
@@ -217,9 +217,9 @@
 	</reporting>
 
 	<scm>
-		<connection>scm:git:git@github.com:digital-me/op-sdk-lib.git</connection>
-		<url>scm:git:git@github.com:digital-me/op-sdk-lib.git</url>
-		<developerConnection>scm:git:git@github.com:digital-me/op-sdk-lib.git</developerConnection>
+		<url>https://github.com/digital-me/${project.artifactId}</url>
+		<connection>scm:git:git://github.com/digital-me/${project.artifactId}.git</connection>
+		<developerConnection>scm:git:git@github.com:digital-me/${project.artifactId}.git</developerConnection>
 	</scm>
 
 </project>
