@@ -10,8 +10,13 @@
 	<artifactId>op-sdk-lib</artifactId>
 	<version>0.0.12-SNAPSHOT</version>
 	<packaging>jar</packaging>
+
 	<name>OpenIdConnect-Qiy : SDK</name>
 	<url>https://digital-me.github.io/op-sdk-lib</url>
+	<description>A OpenIdConnect implementation with hooks for specific implementations. The aim is to have as little 
+	dependencies as possible, as to be a base for further projects. The first implementation is as a OpenIdConnect to 
+	Qiy bridge.</description>
+
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -129,6 +134,12 @@
 			<artifactId>bval-jsr</artifactId>
 			<version>1.1.1</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Spock for testing (requires Groovy) -->
 		<dependency>
