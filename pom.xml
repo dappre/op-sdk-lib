@@ -23,7 +23,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.source.version>1.8</java.source.version>
 		<java.target.version>1.8</java.target.version>
-		<github.global.server>github</github.global.server>
+		<!-- github.global.server>github</github.global.server -->
 	</properties>
 
 	<build>
@@ -79,7 +79,7 @@
 				<artifactId>site-maven-plugin</artifactId>
 				<version>0.12</version>
 				<configuration>
-					<server>github</server>
+					<!-- server>github</server -->
 					<message>Creating site for ${project.version}</message>
 					<repositoryName>${project.artifactId}</repositoryName>
 					<repositoryOwner>digital-me</repositoryOwner>
@@ -229,7 +229,7 @@
 
 	<scm>
 		<url>https://github.com/digital-me/${project.artifactId}</url>
-		<connection>scm:git:git://github.com/digital-me/${project.artifactId}.git</connection>
+		<connection>scm:git:git@github.com:digital-me/${project.artifactId}.git</connection>
 		<developerConnection>scm:git:git@github.com:digital-me/${project.artifactId}.git</developerConnection>
 	</scm>
 
