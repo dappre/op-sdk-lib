@@ -23,7 +23,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.source.version>1.8</java.source.version>
 		<java.target.version>1.8</java.target.version>
-		<!-- github.global.server>github</github.global.server -->
+		<github.global.server>github</github.global.server>
 	</properties>
 
 	<build>
