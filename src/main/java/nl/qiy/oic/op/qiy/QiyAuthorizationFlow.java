@@ -20,7 +20,6 @@
 package nl.qiy.oic.op.qiy;
 
 import java.io.BufferedReader;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -39,6 +38,8 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -87,6 +88,7 @@ public class QiyAuthorizationFlow implements AuthorizationFlow {
     private static final Logger LOGGER = LoggerFactory.getLogger(QiyAuthorizationFlow.class);
     private static final Random RANDOM = new SecureRandom();
     private static final ExecutorService THREAD_POOL = Executors.newFixedThreadPool(8);
+    private static final ScheduledExecutorService STREAM_CHECK_THREAD = Executors.newScheduledThreadPool(1);
     private static QiyAuthorizationFlow instance;
 
 
@@ -257,14 +259,28 @@ public class QiyAuthorizationFlow implements AuthorizationFlow {
     @Path("watch/{random}")
     @GET
     @Produces(SseFeature.SERVER_SENT_EVENTS)
-    @SuppressWarnings({ "ucd", "resource" })
+    @SuppressWarnings({ "ucd" })
     public static Response watchLoginStatus(@PathParam("random") String random, @Context HttpServletRequest request) {
-        EventOutput eventOutput = new EventOutput(); // NOSONAR
+        EventOutput eventOutput = new EventOutput();
         Optional<OAuthUser> loggedIn = OAuthUserService.getLoggedIn(request.getSession());
         if (loggedIn.isPresent()) {
             notifyUserLoggedIn(random, loggedIn.get(), null);
         } else {
             EVENT_STREAMS.put(random, eventOutput);
+            STREAM_CHECK_THREAD.schedule(() -> {
+                try {
+                    OutboundEvent ping = new OutboundEvent.Builder().comment("ping").build();
+                    eventOutput.write(ping);
+                } catch (Exception e) {
+                    try (EventOutput eo = eventOutput) {
+                        LOGGER.error("Error while writing event to stream {}, removing {}", random, eo, e);
+                    } catch (IOException e1) {
+                        LOGGER.warn("Error while closing stream in error condition. Ignoring");
+                        LOGGER.trace("Error", e1);
+                    }
+                    EVENT_STREAMS.remove(random);
+                }
+            }, 10, TimeUnit.SECONDS);
         }
         // @formatter:off
         return Response.ok()
@@ -348,7 +364,6 @@ public class QiyAuthorizationFlow implements AuthorizationFlow {
         }
     }
 
-    @SuppressWarnings("resource")
     private static void notify(String streamId, String eventName, Object eventData) {
         // @formatter:off
         OutboundEvent chunk = new OutboundEvent.Builder()
@@ -372,11 +387,13 @@ public class QiyAuthorizationFlow implements AuthorizationFlow {
         try {
             LOGGER.debug("Writing chunck {}", eventName);
             stream.write(chunk);
-        } catch (EOFException e) { // NOSONAR
-            LOGGER.info("Stream {} closed with id {}", stream, streamId);
-            EVENT_STREAMS.remove(streamId);
         } catch (Exception e) {
-            LOGGER.error("Error while writing event to stream {}, removing {}", streamId, stream, e);
+            try (EventOutput eo = stream) {
+                LOGGER.error("Error while writing event to stream {}, removing {}", streamId, stream, e);
+            } catch (IOException e1) {
+                LOGGER.warn("Error while closing stream in error condition. Ignoring");
+                LOGGER.trace("Error", e1);
+            }
             EVENT_STREAMS.remove(streamId);
         }
     }
