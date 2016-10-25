@@ -20,6 +20,7 @@
 package nl.qiy.oic.op.api;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,7 +79,7 @@ public class CORSFilter implements Filter {
             origin = "*";
             LOGGER.debug("allowing all CORS requests");
         } else {
-            origin = request.getHeader("Origin");
+            origin = URI.create(request.getHeader("Origin")).toString();
             if (origin != null && !OAuthClientService.existsOrigin(origin)) {
                 LOGGER.debug("Resetting origin {}, since it is not accepted by the client service", origin);
                 origin = null;

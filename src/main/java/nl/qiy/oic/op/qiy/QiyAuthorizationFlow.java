@@ -96,7 +96,7 @@ public class QiyAuthorizationFlow implements AuthorizationFlow {
     private static final Map<String, HttpSession> TO_BE_LOGGED_IN = new HashMap<>();
     private static final Map<String, EventOutput> EVENT_STREAMS = new HashMap<>();
 
-    private static MessageFormat pageFormat;
+    private static volatile MessageFormat pageFormat;
     private static UriBuilder notificationUriBuilder;
     private static UriBuilder callbackUriBuilder;
 
@@ -217,7 +217,7 @@ public class QiyAuthorizationFlow implements AuthorizationFlow {
             try (Reader sr = new InputStreamReader(this.getClass().getResourceAsStream("/loginPageFormat.html"));
                     BufferedReader reader = new BufferedReader(sr)) {
                 MessageFormat mf = new MessageFormat(reader.lines().collect(Collectors.joining("\n")));
-                pageFormat = mf; // NOSONAR
+                pageFormat = mf;
             } catch (IOException e) {
                 LOGGER.warn("Error while doing getPageFormat", e);
                 throw new IllegalStateException("illegal page format");
@@ -264,7 +264,8 @@ public class QiyAuthorizationFlow implements AuthorizationFlow {
         EventOutput eventOutput = new EventOutput();
         Optional<OAuthUser> loggedIn = OAuthUserService.getLoggedIn(request.getSession());
         if (loggedIn.isPresent()) {
-            notifyUserLoggedIn(random, loggedIn.get(), null);
+            QiyOAuthUser usr = (QiyOAuthUser) loggedIn.get();
+            notifyUserLoggedIn(random, usr);
         } else {
             EVENT_STREAMS.put(random, eventOutput);
             STREAM_CHECK_THREAD.schedule(() -> {
@@ -315,7 +316,7 @@ public class QiyAuthorizationFlow implements AuthorizationFlow {
             throw new IllegalArgumentException(msg);
         }
         QiyOAuthUser template = new QiyOAuthUser(cbInput);
-        OAuthUser oAuthUser = OAuthUserService.login(template, session);
+        QiyOAuthUser oAuthUser = (QiyOAuthUser) OAuthUserService.login(template, session);
         // works, but don't want it
         if (oAuthUser == null) {
             THREAD_POOL.execute(() -> {
@@ -326,21 +327,21 @@ public class QiyAuthorizationFlow implements AuthorizationFlow {
                         LOGGER.warn("Error while doing ", e);
                         throw new IllegalStateException(e);
                     }
-                    OAuthUser loggedIn = OAuthUserService.login(template, session);
+                    QiyOAuthUser loggedIn = (QiyOAuthUser) OAuthUserService.login(template, session);
                     if (loggedIn != null) {
-                        notifyUserLoggedIn(random, loggedIn, cbInput);
+                        notifyUserLoggedIn(random, loggedIn);
                         break;
                     }
                 }
             });
         } else {
-            notifyUserLoggedIn(random, oAuthUser, cbInput);
+            notifyUserLoggedIn(random, oAuthUser);
         }
         return Response.ok().build();
     }
 
-    private static void notifyUserLoggedIn(String random, OAuthUser oAuthUser, CallbackInput cbInput) {
-        AuthenticationRequest request = AuthenticationRequest.fromBytes(cbInput.body);
+    private static void notifyUserLoggedIn(String random, QiyOAuthUser oAuthUser) {
+        AuthenticationRequest request = oAuthUser.getRequest();
         Response response = AuthenticationResponse.getResponse(request, oAuthUser);
         Map<String, String> body = new HashMap<>();
         if (response.getStatusInfo().getFamily() == Status.Family.REDIRECTION) {
@@ -423,7 +424,7 @@ public class QiyAuthorizationFlow implements AuthorizationFlow {
      *            the base URL for Dappre
      * @return see description
      */
-    public static QiyAuthorizationFlow getInstance(URL baseDappreURL) {
+    public static synchronized QiyAuthorizationFlow getInstance(URL baseDappreURL) {
         if (instance == null) {
             baseDappreUrl = baseDappreURL;
             instance = new QiyAuthorizationFlow();

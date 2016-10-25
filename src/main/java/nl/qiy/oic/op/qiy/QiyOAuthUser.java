@@ -28,6 +28,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import nl.qiy.oic.op.api.AuthenticationRequest;
 import nl.qiy.oic.op.domain.AddressClaim;
 import nl.qiy.oic.op.domain.OAuthUser;
 import nl.qiy.oic.op.domain.StandardClaims;
@@ -190,5 +191,12 @@ public class QiyOAuthUser implements OAuthUser {
 
     public Set<String> getShareIds() {
         return this.shareIds;
+    }
+
+    /**
+     * @return an AuthenticationRequest that corresponds to the input which was given in the constructor
+     */
+    public AuthenticationRequest getRequest() {
+        return AuthenticationRequest.fromBytes(cbInput.body);
     }
 }
