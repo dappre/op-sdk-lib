@@ -8,14 +8,12 @@
 	</prerequisites>
 	<groupId>nl.qiy.openid-connect</groupId>
 	<artifactId>op-sdk-lib</artifactId>
-	<version>0.0.12-SNAPSHOT</version>
+	<version>0.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>OpenIdConnect-Qiy : SDK</name>
 	<url>https://digital-me.github.io/op-sdk-lib</url>
-	<description>A OpenIdConnect implementation with hooks for specific implementations. The aim is to have as little 
-	dependencies as possible, as to be a base for further projects. The first implementation is as a OpenIdConnect to 
-	Qiy bridge.</description>
+	<description>A OpenIdConnect implementation with hooks for specific implementations. The aim is to have as little dependencies as possible, as to be a base for further projects. The first implementation is as a OpenIdConnect to Qiy bridge.</description>
 
 
 	<properties>

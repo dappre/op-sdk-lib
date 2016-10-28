@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import nl.qiy.oic.op.service.AuthorizationFlowService;
 import nl.qiy.oic.op.service.ConfigurationService;
-import nl.qiy.oic.op.service.JaxrsClientService;
 import nl.qiy.oic.op.service.OAuthClientService;
 import nl.qiy.oic.op.service.OAuthUserService;
 import nl.qiy.oic.op.service.SecretService;
@@ -56,7 +55,6 @@ public class ContextListener implements ServletContextListener {
         OAuthClientService.INSTANCE.name();
         SecretService.INSTANCE.name();
         AuthorizationFlowService.INSTANCE.name();
-        JaxrsClientService.INSTANCE.name();
         LOGGER.debug("init services success");
         ok = true;
     }
