@@ -7,7 +7,9 @@ def project='op-sdk-lib'
 def tagPrefix='rel-'
 
 node {
-    try {
+    def artifactoryMaven = null
+
+//    try {
         withEnv(["PATH+MAVEN=${tool 'maven'}/bin", "JAVA_HOME=${tool 'jdk1.8.0_latest'}"]) {
             stage('Clean') {
                 sh "mvn clean"
@@ -20,25 +22,34 @@ node {
                 sh "mvn -DnewVersion=$newVersion versions:set"
             }
             
-            stage('Build') {
-                sh "mvn -Dmaven.test.failure.ignore install"
+//            stage('Build') {
+//                sh "mvn -Dmaven.test.failure.ignore install"
+//            }
+
+            stage('Prepare Artifactory') {
+                def server = Artifactory.server('qiy-artifactory@boxtel')
+                artifactoryMaven = Artifactory.newMavenBuild()
+                artifactoryMaven.tool = 'maven' // Tool name from Jenkins configuration
+                artifactoryMaven.deployer releaseRepo:'Qiy', snapshotRepo:'Qiy', server: server
+                artifactoryMaven.resolver releaseRepo:'libs-releases', snapshotRepo:'libs-snapshot', server: server
             }
-            
-            stage('Deploy') {
-                sh "mvn deploy"
+
+            stage('Build & Deploy') {
+                def buildInfo = Artifactory.newBuildInfo()
+                artifactoryMaven.run pom: 'pom.xml', goals: 'clean install', buildInfo: buildInfo
             }
         }
-     } catch (e) {
-         // TODO [FV 20161104] Send XMPP message here
-         throw e;
-     } finally {
-         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
-     }
+//     } catch (e) {
+//         // TODO [FV 20161104] Send XMPP message here
+//         throw e;
+//     } finally {
+//         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
+//     }
 }
 
 @NonCPS
 def newVersion(tagPrefix, update, currVersion) {
-    println "${tagPrefix} - ${update} - ${currVersion}"
+//    println "${tagPrefix} - ${update} - ${currVersion}"
     if (currVersion.length() < tagPrefix.length() + 5)  {
         throw new IllegalArgumentException("${currVersion} is too short for prefix ${tagPrefix}")
     }
@@ -64,7 +75,7 @@ def newVersion(tagPrefix, update, currVersion) {
             throw new IllegalArgumentException(update + " is not a valid value for update")
     }
     String result = "${major}.${minor}.${micro}";
-    println result
+//    println result
     return result
 }
 
