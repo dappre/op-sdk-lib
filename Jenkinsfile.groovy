@@ -16,9 +16,9 @@ node {
             // Get some code from a GitHub repository
             git url: 'https://github.com/digital-me/${project}.git'
             
-            stage 'Find new version'
-            echo "${findVersion(project)}"
-            echo "${env.GIT_URL}"
+//            stage 'Find new version'
+//            echo "${findVersion(project)}"
+//            echo "${env.GIT_URL}"
          
             // Mark the code build 'stage'....
             stage 'Build'
@@ -42,15 +42,15 @@ def findVersion(project) {
         // println it
         def matcher = ( it.name =~ /${tagPrefix}([0-9]+).([0-9]+).([0-9]+)$/ )
         if (!matcher.find()) {
-        // always have somthing in the result list,
-        // if there are no items in the list, max will fail
-        return min;
+            // always have somthing in the result list,
+            // if there are no items in the list, max will fail
+            return min;
         }
         // else
         return new Tuple(
-        Integer.parseInt(matcher.group(1)),
-        Integer.parseInt(matcher.group(2)),
-        Integer.parseInt(matcher.group(3)))
+            Integer.parseInt(matcher.group(1)),
+            Integer.parseInt(matcher.group(2)),
+            Integer.parseInt(matcher.group(3)))
     }
     .plus(min)
     .max {t1, t2 ->
