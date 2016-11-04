@@ -12,11 +12,11 @@ node {
 
         withEnv(["PATH+MAVEN=${tool 'maven'}/bin", "JAVA_HOME=${tool 'jdk1.8.0_latest'}"]) {
             // Mark the code checkout 'stage'....
-            stage 'Checkout'
+//            stage 'Checkout'
             // Get some code from a GitHub repository
-            git url: 'https://github.com/digital-me/${project}.git'
+//            git url: 'https://github.com/digital-me/${project}.git'
             
-            stage 'Find new version'
+            stage 'Find new version for ${project}'
             echo "Current version = ${findVersion(project)}"
             echo "GIT URL = ${env.GIT_URL}"
          
@@ -34,6 +34,7 @@ node {
 }
 
 def findVersion(project) {
+    println project
     def url1 = "https://api.github.com/repos/digital-me/${project}/tags".toURL()
     def tagPrefix = "rel-"
     def min = new Tuple(0,0,12) // for bootstrapping
