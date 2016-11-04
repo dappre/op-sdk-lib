@@ -16,7 +16,7 @@ node {
             // Get some code from a GitHub repository
 //            git url: 'https://github.com/digital-me/${project}.git'
             
-            stage 'Find new version for ${project}'
+            stage 'Find new version'
             echo "Current version = ${findVersion(project)}"
             echo "GIT URL = ${env.GIT_URL}"
          
@@ -34,13 +34,13 @@ node {
 }
 
 def findVersion(project) {
-    println project
+    echo "in find version ${project}"
     def url1 = "https://api.github.com/repos/digital-me/${project}/tags".toURL()
     def tagPrefix = "rel-"
     def min = new Tuple(0,0,12) // for bootstrapping
     def json = new groovy.json.JsonSlurper().parseText(url1.text);
     return json.collect {
-        // println it
+        echo it
         def matcher = ( it.name =~ /${tagPrefix}([0-9]+).([0-9]+).([0-9]+)$/ )
         if (!matcher.find()) {
             // always have somthing in the result list,
