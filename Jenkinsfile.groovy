@@ -43,7 +43,7 @@ def findVersion(project) {
         def tagPrefix = "rel-"
         def min = new Tuple(0,0,12) // for bootstrapping
         def json = new groovy.json.JsonSlurper().parseText(url1.text);
-        return json.collect {
+        Tuple result = json.collect {
             echo it
             def matcher = ( it.name =~ /${tagPrefix}([0-9]+).([0-9]+).([0-9]+)$/ )
             if (!matcher.find()) {
@@ -67,6 +67,8 @@ def findVersion(project) {
             }
             return t[0].compareTo(t2[0]);
         }
+        
+        return "${result[0]}.${result[1]}.${result[2]}"
     } catch (e) {
         echo e;
         return "0.0.14";
