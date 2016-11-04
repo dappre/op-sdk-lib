@@ -71,8 +71,8 @@ def findVersion(project) {
         String result = "${maxversion[0]}.${maxversion[1]}.${maxversion[2]}";
         println result
         return result
-    } catch (e) {
-        echo e;
+    } catch (Throwable e) {
+        e.printStackTrace();
         return "0.0.14";
     }
 }
