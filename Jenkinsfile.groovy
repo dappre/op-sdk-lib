@@ -18,7 +18,7 @@ node {
             
             stage 'Find new version'
             echo "${findVersion(project)}"
-            echo "${env.GIT_URL"}
+            echo "${env.GIT_URL}"
          
             // Mark the code build 'stage'....
             stage 'Build'
