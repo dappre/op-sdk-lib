@@ -6,19 +6,22 @@ def release=false
 def project='op-sdk-lib'
 
 echo "GIT URL=${env.GIT_URL}"
+echo "Build cause = ${env.BUILD_CAUSE}"
 
 node {
     try {
 
+        def version = findVersion(project);
+        
         withEnv(["PATH+MAVEN=${tool 'maven'}/bin", "JAVA_HOME=${tool 'jdk1.8.0_latest'}"]) {
             // Mark the code checkout 'stage'....
 //            stage 'Checkout'
             // Get some code from a GitHub repository
 //            git url: 'https://github.com/digital-me/${project}.git'
             
-            stage 'Find new version' 
-            echo "Current version = ${findVersion(project)}"
-            
+//            stage 'Find new version' 
+//            echo "Current version = ${}"
+//            
             // Mark the code build 'stage'....
             stage 'Build'
             // Run the maven build
