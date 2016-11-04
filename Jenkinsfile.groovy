@@ -17,8 +17,8 @@ node {
             git url: 'https://github.com/digital-me/${project}.git'
             
             stage 'Find new version'
-            echo findVersion()
-            echo env.GIT_URL
+            echo "${findVersion(project)}"
+            echo "${env.GIT_URL"}
          
             // Mark the code build 'stage'....
             stage 'Build'
@@ -33,7 +33,7 @@ node {
      }
 }
 
-def findVersion() {
+def findVersion(project) {
     def url1 = "https://api.github.com/repos/digital-me/${project}/tags".toURL()
     def tagPrefix = "rel-"
     def min = new Tuple(0,0,12) // for bootstrapping
