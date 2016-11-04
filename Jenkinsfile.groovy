@@ -11,7 +11,6 @@ echo "Build cause = ${env.BUILD_CAUSE}"
 node {
     try {
 
-        def version = findVersion(project);
         
         withEnv(["PATH+MAVEN=${tool 'maven'}/bin", "JAVA_HOME=${tool 'jdk1.8.0_latest'}"]) {
             // Mark the code checkout 'stage'....
@@ -26,6 +25,8 @@ node {
             stage 'Build'
             // Run the maven build
             sh "mvn -Dmaven.test.failure.ignore clean package"
+            
+            def version = findVersion(project);
         }
      } catch (e) {
          // TODO [FV 20161104] Send XMPP message here
