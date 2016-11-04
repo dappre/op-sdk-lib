@@ -1,9 +1,9 @@
 node {
     // Mark the code checkout 'stage'....
-//    stage 'Checkout'
+    stage 'Checkout'
  
     // Get some code from a GitHub repository
-//    git url: 'https://github.com/jglick/simple-maven-project-with-tests.git'
+    git url: 'https://github.com/digital-me/op-sdk-lib.git'
  
     // Get the maven tool.
     // ** NOTE: This 'M3' maven tool must be configured
