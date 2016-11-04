@@ -1,32 +1,32 @@
 #!/usr/bin/env groovy
 
-def update='minor'
+def update='micro'
 def branch='master'
 def release=false
 def project='op-sdk-lib'
-
-echo "GIT URL=${env.GIT_URL}"
-echo "Build cause = ${env.BUILD_CAUSE}"
+def tagPrefix='rel-'
 
 node {
     try {
-
-        
         withEnv(["PATH+MAVEN=${tool 'maven'}/bin", "JAVA_HOME=${tool 'jdk1.8.0_latest'}"]) {
-            // Mark the code checkout 'stage'....
-//            stage 'Checkout'
-            // Get some code from a GitHub repository
-//            git url: 'https://github.com/digital-me/${project}.git'
+            stage('Clean') {
+                sh "mvn clean"
+            }
             
-//            stage 'Find new version' 
-//            echo "Current version = ${}"
-//            
-            // Mark the code build 'stage'....
-            stage 'Build'
-            // Run the maven build
-            sh "mvn -Dmaven.test.failure.ignore clean package"
+            stage ('Set new version') {
+                def currVersion=sh script: 'tmp=\$(git tag -l  "rel-*" | cut -d\'-\' -f2- | sort -r -V | head -n1);echo \${tmp:-\'rel-0.0.12\'}', returnStdout: true
+                def newVersion = newVersion(tagPrefix, update, currVersion);
+                echo "current version is ${currVersion}, new version will be ${newVersion}"
+                sh "mvn -DnewVersion=$newVersion versions:set"
+            }
             
-            def version = findVersion(project);
+            stage('Build') {
+                sh "mvn -Dmaven.test.failure.ignore install"
+            }
+            
+            stage('Deploy') {
+                sh "mvn deploy"
+            }
         }
      } catch (e) {
          // TODO [FV 20161104] Send XMPP message here
@@ -36,44 +36,35 @@ node {
      }
 }
 
-def findVersion(project) {
-    try {
-        echo "in find version ${project}"
-        def url1 = "https://api.github.com/repos/digital-me/${project}/tags".toURL()
-        def tagPrefix = "rel-"
-        def min = new Tuple(0,0,12) // for bootstrapping
-        def json = new groovy.json.JsonSlurper().parseText(url1.text);
-        Tuple maxversion = json.collect {
-            println it
-            def matcher = ( it.name =~ /${tagPrefix}([0-9]+).([0-9]+).([0-9]+)$/ )
-            if (!matcher.find()) {
-                // always have somthing in the result list,
-                // if there are no items in the list, max will fail
-                return min;
-            }
-            // else
-            return new Tuple(
-                Integer.parseInt(matcher.group(1)),
-                Integer.parseInt(matcher.group(2)),
-                Integer.parseInt(matcher.group(3)))
-        }
-        .plus(min)
-        .max {t1, t2 ->
-            if (t1[0].compareTo(t2[0]) == 0){
-                if (t1[1].compareTo(t2[1]) == 0) {
-                    return t1[2].compareTo(t2[2]);
-                }
-                return t1[1].compareTo(t2[1]);
-            }
-            return t[0].compareTo(t2[0]);
-        }
-        
-        String result = "${maxversion[0]}.${maxversion[1]}.${maxversion[2]}";
-        println result
-        return result
-    } catch (Throwable e) {
-        e.printStackTrace();
-        return "0.0.14";
+@NonCPS
+def newVersion(tagPrefix, update, currVersion) {
+    println "${tagPrefix} - ${update} - ${currVersion}"
+    if (currVersion.length() < tagPrefix.length() + 5)  {
+        throw new IllegalArgumentException("${currVersion} is too short for prefix ${tagPrefix}")
     }
+    def parts = currVersion.substring(tagPrefix.length()).split('\\.')
+    def major = parts[0].toInteger()
+    def minor = parts[1].toInteger()
+    def micro = parts[2].toInteger()
+    
+    switch (update) {
+        case 'major':
+            major = 1+major;
+            minor = 0;
+            micro = 0;
+            break;
+        case 'minor':
+            minor = 1+minor;
+            micro = 0;
+            break;
+        case 'micro':
+            micro = 1+micro;
+            break;
+        default:
+            throw new IllegalArgumentException(update + " is not a valid value for update")
+    }
+    String result = "${major}.${minor}.${micro}";
+    println result
+    return result
 }
 
