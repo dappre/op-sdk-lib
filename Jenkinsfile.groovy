@@ -5,7 +5,7 @@ def branch='master'
 def release=false
 def project='op-sdk-lib'
 
-echo "Build URL=${env.BUILD_URL}"
+echo "GIT URL=${env.GIT_URL}"
 
 node {
     try {
@@ -16,10 +16,9 @@ node {
             // Get some code from a GitHub repository
 //            git url: 'https://github.com/digital-me/${project}.git'
             
-            stage 'Find new version' {
-                echo "Current version = ${findVersion(project)}"
-                echo "GIT URL = ${env.GIT_URL}"
-            }
+            stage 'Find new version' 
+            echo "Current version = ${findVersion(project)}"
+            
             // Mark the code build 'stage'....
             stage 'Build'
             // Run the maven build
