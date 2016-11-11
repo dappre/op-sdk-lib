@@ -32,13 +32,14 @@ node {
         }
 
         stage('Build & Deploy') {
+        	def goals = release ? 'install sonar:sonar' : 'install';
             def buildInfo = Artifactory.newBuildInfo()
             def server = Artifactory.server('qiy-artifactory@boxtel')
             def artifactoryMaven = Artifactory.newMavenBuild()
             artifactoryMaven.tool = 'maven' // Tool name from Jenkins configuration
             artifactoryMaven.deployer releaseRepo:'Qiy', snapshotRepo:'Qiy', server: server
             artifactoryMaven.resolver releaseRepo:'libs-releases', snapshotRepo:'libs-snapshots', server: server
-            artifactoryMaven.run pom: 'pom.xml', goals: 'install', buildInfo: buildInfo
+            artifactoryMaven.run pom: 'pom.xml', goals: goals, buildInfo: buildInfo
             junit testResults: '**/target/surefire-reports/*.xml'
         }
 
