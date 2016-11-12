@@ -28,21 +28,21 @@ node {
             def currVersion=sh (script: "tmp=\$(git tag -l  '${tagPrefix}*' | cut -d'-' -f2- | sort -r -V | head -n1);echo \${tmp:-'0.0.12'}", returnStdout: true).trim()
             newVersion = nextVersion(update, currVersion, release);
             echo "current version is ${currVersion}, new version will be ${newVersion}"
+            currentBuild.displayName="#${env.BUILD_NUMBER}: ${newVersion}"
             sh "mvn versions:set -DnewVersion=$newVersion"
         }
 
         stage('Build & Deploy') {
-	        //withSonarQubeEnv('SonarServerDefault') {
-	        	def goals = false && release ? "install org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar" : 'install';
-	            def buildInfo = Artifactory.newBuildInfo()
-	            def server = Artifactory.server('qiy-artifactory@boxtel')
-	            def artifactoryMaven = Artifactory.newMavenBuild()
-	            artifactoryMaven.tool = 'maven' // Tool name from Jenkins configuration
-	            artifactoryMaven.deployer releaseRepo:'Qiy', snapshotRepo:'Qiy', server: server
-	            artifactoryMaven.resolver releaseRepo:'libs-releases', snapshotRepo:'libs-snapshots', server: server
-	            artifactoryMaven.run pom: 'pom.xml', goals: goals, buildInfo: buildInfo
-	            junit testResults: '**/target/surefire-reports/*.xml'
-            //}
+        	def goals = 'install'; //release ? "install org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar" : 'install';
+            def buildInfo = Artifactory.newBuildInfo()
+            def server = Artifactory.server('qiy-artifactory@boxtel')
+            def artifactoryMaven = Artifactory.newMavenBuild()
+            artifactoryMaven.tool = 'maven' // Tool name from Jenkins configuration
+            artifactoryMaven.deployer releaseRepo:'Qiy', snapshotRepo:'Qiy', server: server
+            artifactoryMaven.resolver releaseRepo:'libs-releases', snapshotRepo:'libs-snapshots', server: server
+            artifactoryMaven.run pom: 'pom.xml', goals: goals, buildInfo: buildInfo
+            junit testResults: '**/target/surefire-reports/*.xml'
+            step ([$class: 'DependencyCheckPublisher'])
         }
 
         stage('Tag release') {
