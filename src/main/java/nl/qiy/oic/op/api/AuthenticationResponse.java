@@ -184,10 +184,10 @@ public class AuthenticationResponse {
         if (inputs.responseType.contains(ResponseType.ID_TOKEN)) {
             params.put("id_token", response.buildIdToken());
         }
-        if (inputs.responseType.contains(ResponseType.TOKEN)) {
-            params.put("access_token", response.buildAccessToken());
-            params.put("token_type", response.tokenType());
-        }
+        // if (inputs.responseType.contains(ResponseType.TOKEN)) {
+        // params.put("access_token", response.buildAccessToken());
+        // params.put("token_type", response.tokenType());
+        // }
         return params;
     }
 
