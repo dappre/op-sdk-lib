@@ -36,18 +36,21 @@
 					<target>${java.target.version}</target>
 				</configuration>
 			</plugin>
-            <plugin>
-              <groupId>org.owasp</groupId>
-              <artifactId>dependency-check-maven</artifactId>
-              <version>1.4.4</version>
-              <executions>
-                  <execution>
-                      <goals>
-                          <goal>check</goal>
-                      </goals>
-                  </execution>
-              </executions>
-            </plugin>			
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>1.4.4</version>
+				<configuration>
+					<format>ALL</format>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<!-- Groovy needed for Spock (testing) -->
 			<plugin>
 				<groupId>org.codehaus.gmavenplus</groupId>
@@ -173,7 +176,8 @@
 			<version>3.1.0</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- adding this dependency because databind includes a vulnerable one, once databind gets updated to not include 2.7.0, this on -->
+		<!-- adding this dependency because databind includes a vulnerable one, 
+			once databind gets updated to not include 2.7.0, this on -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
