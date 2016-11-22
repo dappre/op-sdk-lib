@@ -41,6 +41,7 @@
 				<artifactId>dependency-check-maven</artifactId>
 				<version>1.4.4</version>
 				<configuration>
+					<dataDirectory>/opt/tmp</dataDirectory>
 					<format>ALL</format>
 				</configuration>
 				<executions>
