@@ -4,7 +4,7 @@ def update="micro"            // needs to be set here in the source
 def project="op-sdk-lib"      // needs to be set here in the source
 def credid="200c2dab-036b-48a3-a824-1f4257be94ff" // jenkins id for deployer key for this project
 def branch='master'           // can we get this as a parameter?
-def release=true              // by default false; true if parameter
+def release=false              // by default false; true if parameter
 
 def giturl="git@github.com:digital-me/${project}.git"  // NB: this is the format ssh-agent understands
 def tagPrefix="${branch}-"    // maybe: branch name?
@@ -38,11 +38,12 @@ node {
             def server = Artifactory.server('qiy-artifactory@boxtel')
             def artifactoryMaven = Artifactory.newMavenBuild()
             artifactoryMaven.tool = 'maven' // Tool name from Jenkins configuration
+            artifactoryMaven.opts = '-Djava.io.tmpdir="/opt/tmp"'
             artifactoryMaven.deployer releaseRepo:'Qiy', snapshotRepo:'Qiy', server: server
             artifactoryMaven.resolver releaseRepo:'libs-releases', snapshotRepo:'libs-snapshots', server: server
             artifactoryMaven.run pom: 'pom.xml', goals: goals, buildInfo: buildInfo
             junit testResults: '**/target/surefire-reports/*.xml'
-            // step ([$class: 'DependencyCheckPublisher'])
+            step ([$class: 'DependencyCheckPublisher'])
         }
 
         stage('Tag release') {
