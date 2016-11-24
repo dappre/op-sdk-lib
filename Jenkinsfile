@@ -35,7 +35,7 @@ node {
         stage('Build & Deploy') {
         	def goals = 'install'; //release ? "install org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar" : 'install';
             def buildInfo = Artifactory.newBuildInfo()
-            def server = Artifactory.server('qiy-artifactory@boxtel')
+            def server = Artifactory.server('private-repo')
             def artifactoryMaven = Artifactory.newMavenBuild()
             artifactoryMaven.tool = 'maven' // Tool name from Jenkins configuration
             artifactoryMaven.opts = '-Djava.io.tmpdir="/opt/tmp"'
