@@ -9,6 +9,22 @@ def release=false              // by default false; true if parameter
 def giturl="git@github.com:digital-me/${project}.git"  // NB: this is the format ssh-agent understands
 def tagPrefix="${branch}-"    // maybe: branch name?
 
+
+def isMultibranch = env.BRANCH_NAME != null;
+if (isMultibranch) {
+    println "branch: ${env.BRANCH_NAME}"
+} else {
+    println "not a multibranch"
+}
+println "author: ${env.CHANGE_AUTHOR}"
+def causes = currentBuild.rawBuild.getCauses();
+println "causes: ${causes}"
+
+def specificCause = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
+println "build kicked off by: ${specificCause}"
+
+
+
 node {
     def newVersion=null
     
