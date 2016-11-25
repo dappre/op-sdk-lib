@@ -17,12 +17,6 @@ if (isMultibranch) {
     println "not a multibranch"
 }
 println "author: ${env.CHANGE_AUTHOR}"
-def causes = currentBuild.rawBuild.getCauses();
-println "causes: ${causes}"
-
-def specificCause = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
-println "build kicked off by: ${specificCause}"
-
 
 
 node {
