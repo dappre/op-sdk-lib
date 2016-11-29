@@ -34,7 +34,7 @@ node {
 
         stage ('Set new version') {
             newVersion = nextVersion(branch, update, release);
-            echo "current version is ${currVersion}, new version will be ${newVersion}"
+            echo "new version will be ${newVersion}"
             currentBuild.displayName="#${env.BUILD_NUMBER}: ${newVersion}"
             sh "mvn versions:set -DnewVersion=$newVersion"
         }
