@@ -41,8 +41,7 @@ node {
 
         stage('Build & Deploy') {
             //release ? "install org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar org.owasp:dependency-check-maven:check" : 'install';
-            sh "mvn install"
-        	def goals = 'deploy:deploy'; 
+        	def goals = 'install'; 
             def buildInfo = Artifactory.newBuildInfo()
             def server = Artifactory.server('private-repo')
             def artifactoryMaven = Artifactory.newMavenBuild()
