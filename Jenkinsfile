@@ -10,7 +10,6 @@ def branch='master'           // can we get this as a parameter?
 def release=false              // by default false; true if parameter
 
 def giturl="git@github.com:digital-me/${project}.git"  // NB: this is the format ssh-agent understands
-def ="${branch}-"    // maybe: branch name?
 
 
 def isMultibranch = env.BRANCH_NAME != null;
