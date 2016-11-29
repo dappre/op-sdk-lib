@@ -40,11 +40,11 @@ node {
         }
 
         stage('Build & Deploy') {
+            //release ? "install org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar org.owasp:dependency-check-maven:check" : 'install';
             sh "mvn install"
-            
-        	def goals = 'deploy'; //release ? "install org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar org.owasp:dependency-check-maven:check" : 'install';
+        	def goals = 'deploy:deploy'; 
             def buildInfo = Artifactory.newBuildInfo()
-            def server = Artifactory.server('qiy-artifactory@boxtel')
+            def server = Artifactory.server('private-repo')
             def artifactoryMaven = Artifactory.newMavenBuild()
             artifactoryMaven.tool = 'maven' // Tool name from Jenkins configuration
             artifactoryMaven.opts = "-DskipTests=true -Djava.io.tmpdir=/opt/tmp"
@@ -66,20 +66,29 @@ node {
     }
 }
 
+
+/**
+ * Calculates the next version number based in the following steps:
+ * - ask Git for the tags that start with the branch name
+ * - if nothing was found, use 'master' as branch name and ask again
+ * - keep everything after the first dash
+ * - sort it as version numbers, reversed
+ * - take the first entry
+ * - or 0.0.12 if nothing was found
+ * - add one to either the major, minor or micro parts of the version, depending on the parameter 'update'
+ * - set the versions 'to the right' (e.g. micro if the update was minor) to 0
+ * - add '-SNAPSHOT' if release is false
+ * - return the result
+ */
 @NonCPS
 def nextVersion(branch, update, release) {
-    // - ask Git for the tags that start with the branch name
-    // - keep everything after the first dash
-    // - sort it as version numbers, reversed
-    // - take the first entry
-    // - or 0.0.12 if nothing was found
 
     println "calculating next version ${update} - ${release}"
     def currVersion=sh (script: "git tag -l  '${branch}-*' | cut -d'-' -f2- | sort -r -V | head -n1", returnStdout: true).trim()
-    if (currVersion == "") {
+    if (currVersion == null || currVersion == "") {
         currVersion = sh (script: "git tag -l  'master-*' | cut -d'-' -f2- | sort -r -V | head -n1", returnStdout: true).trim()
     }
-    if (currVersion == "") {
+    if (currVersion == null || currVersion == "") {
         currVersion = "0.0.12"
     }
     
