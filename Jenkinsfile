@@ -1,5 +1,8 @@
 #!/usr/bin/env groovy
 
+// This file is used in multi branch jenkins build, so this will build the snapshot.
+// With multi branch builds we cannot set parameters.
+
 def update="micro"            // needs to be set here in the source
 def project="op-sdk-lib"      // needs to be set here in the source
 def credid="200c2dab-036b-48a3-a824-1f4257be94ff" // jenkins id for deployer key for this project
@@ -7,17 +10,21 @@ def branch='master'           // can we get this as a parameter?
 def release=false              // by default false; true if parameter
 
 def giturl="git@github.com:digital-me/${project}.git"  // NB: this is the format ssh-agent understands
-def tagPrefix="${branch}-"    // maybe: branch name?
+def ="${branch}-"    // maybe: branch name?
 
 
 def isMultibranch = env.BRANCH_NAME != null;
 if (isMultibranch) {
     println "branch: ${env.BRANCH_NAME}"
+    branch=env.BRANCH_NAME;
 } else {
     println "not a multibranch"
 }
 println "author: ${env.CHANGE_AUTHOR}"
-
+println "build cause: ${env.BUILD_CAUSE}"
+println "log name? : ${env.LOGNAME}"
+println "git url: ${env.GIT_URL}"
+println "user: ${env.USER}" 
 
 node {
     def newVersion=null
@@ -30,13 +37,12 @@ node {
         }
 
         stage ('Set new version') {
-            // ask Git for the tags that start with the tagPrefix, 
+            // ask Git for the tags that start with the , 
             // keep everything after the first dash
             // sort it as version numbers, reversed
             // take the first entry
             // or 0.0.12 if nothing was found
-            def currVersion=sh (script: "tmp=\$(git tag -l  '${tagPrefix}*' | cut -d'-' -f2- | sort -r -V | head -n1);echo \${tmp:-'0.0.12'}", returnStdout: true).trim()
-            newVersion = nextVersion(update, currVersion, release);
+            newVersion = nextVersion(update, release);
             echo "current version is ${currVersion}, new version will be ${newVersion}"
             currentBuild.displayName="#${env.BUILD_NUMBER}: ${newVersion}"
             sh "mvn versions:set -DnewVersion=$newVersion"
@@ -57,9 +63,9 @@ node {
 
         stage('Tag release') {
             if (release) {
-                sh "git tag -a '${tagPrefix}${newVersion}' -m 'Release tag by Jenkins'"
+                sh "git tag -a '${branch}-${newVersion}' -m 'Release tag by Jenkins'"
                 sshagent([credid]) {
-                    sh "git -c core.askpass=true push origin '${tagPrefix}${newVersion}'"
+                    sh "git -c core.askpass=true push origin '${branch}-${newVersion}'"
                 }
             }
         }
@@ -67,8 +73,16 @@ node {
 }
 
 @NonCPS
-def nextVersion(update, currVersion, release) {
-    //    println "${update} - ${currVersion}"
+def nextVersion(update, release) {
+    //    println "${update} - ${release}"
+    def currVersion=sh (script: "git tag -l  '${branch}-*' | cut -d'-' -f2- | sort -r -V | head -n1", returnStdout: true).trim()
+    if (currVersion == "") {
+        currVersion = sh (script: "git tag -l  'master-*' | cut -d'-' -f2- | sort -r -V | head -n1", returnStdout: true).trim()
+    }
+    if (currVersion == "") {
+        currVersion = "0.0.12"
+    }
+    
     if (currVersion.length() < 5)  {
         throw new IllegalArgumentException("${currVersion} is too short")
     }
