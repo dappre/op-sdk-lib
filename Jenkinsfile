@@ -46,12 +46,12 @@ node {
             def server = Artifactory.server('private-repo')
             def artifactoryMaven = Artifactory.newMavenBuild()
             artifactoryMaven.tool = 'maven' // Tool name from Jenkins configuration
-            artifactoryMaven.opts = "-DskipTests=true -Djava.io.tmpdir=/opt/tmp"
+            //artifactoryMaven.opts = "-DskipTests=true -Djava.io.tmpdir=/opt/tmp"
             artifactoryMaven.deployer releaseRepo:'Qiy', snapshotRepo:'Qiy', server: server
             artifactoryMaven.resolver releaseRepo:'libs-releases', snapshotRepo:'libs-snapshots', server: server
             artifactoryMaven.run pom: 'pom.xml', goals: goals, buildInfo: buildInfo
             junit testResults: '**/target/surefire-reports/*.xml'
-            step ([$class: 'DependencyCheckPublisher'])
+//            step ([$class: 'DependencyCheckPublisher'])
         }
 
         stage('Tag release') {
@@ -79,44 +79,53 @@ node {
  * - add '-SNAPSHOT' if release is false
  * - return the result
  */
-@NonCPS
 def nextVersion(branch, update, release) {
 
-    println "calculating next version ${update} - ${release}"
-    def currVersion=sh (script: "git tag -l  '${branch}-*' | cut -d'-' -f2- | sort -r -V | head -n1", returnStdout: true).trim()
-    if (currVersion == null || currVersion == "") {
+    try {
+        println "calculating next version ${branch} - ${update} - ${release}"
+        def currVersion="";
         currVersion = sh (script: "git tag -l  'master-*' | cut -d'-' -f2- | sort -r -V | head -n1", returnStdout: true).trim()
-    }
-    if (currVersion == null || currVersion == "") {
-        currVersion = "0.0.12"
-    }
     
-    if (currVersion.length() < 5)  {
-        throw new IllegalArgumentException("${currVersion} is too short")
+        if (currVersion == null || currVersion == "") {
+            currVersion = "0.0.12"
+        }
+        
+        if (currVersion.length() < 5)  {
+            throw new IllegalArgumentException("${currVersion} is too short")
+        }
+        def parts = currVersion.split('\\.')
+        def major = parts[0].toInteger()
+        def minor = parts[1].toInteger()
+        def micro = parts[2].toInteger()
+    
+        switch (update) {
+            case 'major':
+                major = 1+major;
+                minor = 0;
+                micro = 0;
+                break;
+            case 'minor':
+                minor = 1+minor;
+                micro = 0;
+                break;
+            case 'micro':
+                micro = 1+micro;
+                break;
+            default:
+                throw new IllegalArgumentException(update + " is not a valid value for update")
+        }
+        String result = "${major}.${minor}.${micro}";
+        if (!'master'.equals(branch)) {
+            result = "${result}-${branch}";
+        }
+        if (!release) {
+            result = "${result}-SNAPSHOT";
+        }
+        //    println result
+        return result;
+    } catch (Throwable t) {
+        println("Exception caught ${t}");
+        throw t;
     }
-    def parts = currVersion.split('\\.')
-    def major = parts[0].toInteger()
-    def minor = parts[1].toInteger()
-    def micro = parts[2].toInteger()
-
-    switch (update) {
-        case 'major':
-            major = 1+major;
-            minor = 0;
-            micro = 0;
-            break;
-        case 'minor':
-            minor = 1+minor;
-            micro = 0;
-            break;
-        case 'micro':
-            micro = 1+micro;
-            break;
-        default:
-            throw new IllegalArgumentException(update + " is not a valid value for update")
-    }
-    String result = "${major}.${minor}.${micro}";
-    //    println result
-    return release ? result : "${result}-SNAPSHOT"
 }
 
