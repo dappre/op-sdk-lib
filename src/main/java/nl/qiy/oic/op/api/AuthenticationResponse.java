@@ -154,8 +154,9 @@ public class AuthenticationResponse {
                 idt.setAccessToken(at);
 
                 Long validSeconds = OAuthUserService.addBearer(at, idt);
-                params.put("token_type", "Bearer");
+                params.put("token_type", "bearer");
                 params.put("expires_in", validSeconds.toString());
+                params.put("access_token", at);
 
             }
             params.put("id_token", idt.buildStringRepresentation(inputs.clientId, inputs.nonce));
