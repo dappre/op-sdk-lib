@@ -300,4 +300,13 @@ public class IDToken implements Serializable {
     public void setAccessToken(String at) {
         accessToken = at;
     }
+
+    /**
+     * returns the user's claims
+     * 
+     * @return see description
+     */
+    public Map<String, Object> getStandardClaims() {
+        return toMap(user.getClaims());
+    }
 }

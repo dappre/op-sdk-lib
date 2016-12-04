@@ -99,18 +99,18 @@ public class AuthenticationResource {
 
     @Path("user-info")
     @GET
-    public static String getUserInfo(@HeaderParam("Authorization") String bearerToken) {
-        if (!bearerToken.startsWith("Bearer ")) {
-            throw new IllegalArgumentException("Invalid bearer token");
+    @Produces(MediaType.APPLICATION_JSON)
+    public static Response getUserInfo(@HeaderParam("Authorization") String bearerToken) {
+        if (!bearerToken.toLowerCase().startsWith("bearer ")) {
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
         String bearerKey = bearerToken.substring(7).trim();
         IDToken idToken = OAuthUserService.getBearer(bearerKey);
         if (idToken == null) {
-            return null;
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
         // else
-        idToken.setAccessToken(null);
-        return idToken.buildStringRepresentation(null, null);
+        return Response.ok(idToken.getStandardClaims()).build();
     }
 
     /**
