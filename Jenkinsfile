@@ -5,7 +5,7 @@
 
 def config = [
     // build/feature specific (most likely to change)
-    release: true,             // by default false; true if parameter
+    release: false,             // by default false; true if parameter
     update: "micro",            // needs to be set here in the source
     
     // project specific settings 
