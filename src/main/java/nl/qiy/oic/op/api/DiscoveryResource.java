@@ -43,6 +43,7 @@ import nl.qiy.oic.op.service.spi.Configuration;
 @Path(".well-known")
 public class DiscoveryResource {
     private static URI authEndpointUri;
+    private static URI userInfoUri;
     private static URI jwksUri;
 
     @Path("openid-configuration")
@@ -50,7 +51,28 @@ public class DiscoveryResource {
     @Produces(MediaType.APPLICATION_JSON)
     @SuppressWarnings("ucd")
     public static OpenIDProviderMetadata getOpenIdConfiguration() {
-        return new OpenIDProviderMetadata(getAuthEndpoinURI(), getJwksURI(), SecretService.getJWKSet("idToken")); // NOSONAR
+        return new OpenIDProviderMetadata(getAuthEndpoinURI(), getUserInfoEndpointURI(), getJwksURI(),
+                SecretService.getJWKSet("idToken"));
+    }
+
+    private static URI getUserInfoEndpointURI() {
+        if (userInfoUri == null) {
+            String baseUri = ConfigurationService.get(Configuration.BASE_URI);
+
+            try (Stream<Method> methods = Stream.of(AuthenticationResource.class.getDeclaredMethods())) {
+                // @formatter:off
+                Method method = methods
+                        .filter(m -> "getUserInfo".equals(m.getName()))
+                        .findFirst()
+                        .orElseThrow(UnsupportedOperationException::new);
+                // @formatter:on
+                UriBuilder builder = UriBuilder.fromUri(baseUri).path(AuthenticationResource.class).path(method);
+                URI result = builder.build();
+                userInfoUri = result;
+            }
+
+        }
+        return userInfoUri;
     }
 
     private static URI getJwksURI() {

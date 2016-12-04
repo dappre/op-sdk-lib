@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
+import nl.qiy.oic.op.domain.IDToken;
 import nl.qiy.oic.op.domain.OAuthUser;
 import nl.qiy.oic.op.service.spi.UserSessionManager;
 
@@ -67,6 +68,33 @@ public enum OAuthUserService implements LoadingService {
      */
     public static OAuthUser login(OAuthUser template, HttpSession session) {
         return INSTANCE.loader.get(usrSrv -> usrSrv.login(template, session)).orElse(null);
+    }
+
+    /**
+     * Tries to get the IDToken that is associated with the bearerToken, stored by {@link #addBearer(String, IDToken)}
+     * 
+     * @param bearerToken
+     *            given bearerToken
+     * @return see description
+     * @see OAuthUserService#addBearer(String, IDToken)
+     */
+    public static IDToken getBearer(String bearerToken) {
+        return INSTANCE.loader.get(usrSrv -> usrSrv.getBearer(bearerToken)).orElse(null);
+    }
+
+    /**
+     * Store a idToken under key of bearerToken so that it can be retrieved by {@link #getBearer(String)}
+     * 
+     * @param bearerToken
+     *            the key used in storage
+     * @param idToken
+     *            the user to store
+     * @return The number of seconds this bearerToken will be valid
+     * @see OAuthUserService#getBearer(String)
+     */
+    public static Long addBearer(String bearerToken, IDToken idToken) {
+        return INSTANCE.loader.get(usrSrv -> usrSrv.addBearer(bearerToken, idToken))
+                .orElseThrow(IllegalStateException::new);
     }
 
 }

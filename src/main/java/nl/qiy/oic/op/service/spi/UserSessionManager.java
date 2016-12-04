@@ -21,6 +21,7 @@ package nl.qiy.oic.op.service.spi;
 
 import javax.servlet.http.HttpSession;
 
+import nl.qiy.oic.op.domain.IDToken;
 import nl.qiy.oic.op.domain.OAuthUser;
 
 /**
@@ -58,4 +59,24 @@ public interface UserSessionManager extends ServiceProviderInterface {
      * @return see description
      */
     public OAuthUser login(OAuthUser template, HttpSession session);
+
+    /**
+     * Retrieve a stored user
+     * 
+     * @param bearerKey
+     *            the key used in storage
+     * @return a representation of the user
+     */
+    public IDToken getBearer(String bearerKey);
+
+    /**
+     * Store a user using the key
+     * 
+     * @param at
+     *            access token, which is the key for storage
+     * @param idt
+     *            representation for a user
+     * @return the number of seconds the bearer token will remain valid
+     */
+    public Long addBearer(String at, IDToken idt);
 }

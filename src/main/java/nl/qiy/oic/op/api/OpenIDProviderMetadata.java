@@ -351,12 +351,12 @@ public class OpenIDProviderMetadata {
     @JsonProperty("op_tos_uri")
     public final URI opTosUri;
 
-    public OpenIDProviderMetadata(URI authorizationEndpoint, URI jwksUri, JWKSet idTokenJWKInfo) {
+    public OpenIDProviderMetadata(URI authorizationEndpoint, URI userInfoEndpoint, URI jwksUri, JWKSet idTokenJWKInfo) {
         super();
         this.issuer = URI.create(ConfigurationService.get(Configuration.ISS));
         this.authorizationEndpoint = authorizationEndpoint;
         this.tokenEndpoint = null; // no token endpoint yet
-        this.userinfoEndpoint = null; // no userinfo endpoint (yet?)
+        this.userinfoEndpoint = userInfoEndpoint;
         this.jwksUri = jwksUri;
         this.registrationEndpoint = null; // no registration yet
         this.scopesSupported = new HashSet<>();
@@ -369,9 +369,9 @@ public class OpenIDProviderMetadata {
         this.idTokenSigningAlgValuesSupported = signingAlgValues(idTokenJWKInfo);
         this.idTokenEncryptionAlgValuesSupported = encryptionAlgValues(idTokenJWKInfo);
         this.idTokenEncryptionEncValuesSupported = encryptionEncValues(idTokenJWKInfo);
-        this.userinfoSigningAlgValuesSupported = null;
-        this.userinfoEncryptionAlgValuesSupported = null;
-        this.userinfoEncryptionEncValuesSupported = null;
+        this.userinfoSigningAlgValuesSupported = signingAlgValues(idTokenJWKInfo);
+        this.userinfoEncryptionAlgValuesSupported = encryptionAlgValues(idTokenJWKInfo);
+        this.userinfoEncryptionEncValuesSupported = encryptionEncValues(idTokenJWKInfo);
         this.requestObjectSigningAlgValuesSupported = null;
         this.requestObjectEncryptionAlgValuesSupported = null;
         this.requestObjectEncryptionEncValuesSupported = null;

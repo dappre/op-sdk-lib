@@ -29,6 +29,7 @@ import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import com.nimbusds.jose.JOSEException;
 
 import nl.qiy.oic.op.api.param.Prompt;
+import nl.qiy.oic.op.domain.IDToken;
 import nl.qiy.oic.op.domain.OAuthUser;
 import nl.qiy.oic.op.service.AuthorizationFlowService;
 import nl.qiy.oic.op.service.OAuthUserService;
@@ -93,6 +95,22 @@ public class AuthenticationResource {
             @Context HttpServletRequest request) throws JOSEException {
         LOGGER.debug("authorizationRequest POST called");
         return handleAuthNRequest(formParams, request.getSession());
+    }
+
+    @Path("user-info")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public static Response getUserInfo(@HeaderParam("Authorization") String bearerToken) {
+        if (!bearerToken.toLowerCase().startsWith("bearer ")) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        String bearerKey = bearerToken.substring(7).trim();
+        IDToken idToken = OAuthUserService.getBearer(bearerKey);
+        if (idToken == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        // else
+        return Response.ok(idToken.getStandardClaims()).build();
     }
 
     /**
