@@ -41,9 +41,10 @@ node {
 def tagRelease(script, config) {
     script.stage('Tag release') {
         if (config['release']) {
-            script.sh "git tag -a '${config['branch']}-${config['newVersion']}' -m 'Release tag by Jenkins'"
-            script.sshagent([script.credid]) {
-                script.sh "git -c core.askpass=true push origin '${config['branch']}-${config['newVersion']}'"
+            def ver = "${config['branch']}-${config['newVersion']}"
+            script.sh "git tag -a '${ver}' -m 'Release tag by Jenkins'"
+            script.sshagent([config['credid']]) {
+                script.sh "git -c core.askpass=true push origin '${ver}'"
             }
         }
     }
