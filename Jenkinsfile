@@ -10,7 +10,7 @@ def config = [
     
     // project specific settings 
     project: "op-sdk-lib",      // needs to be set here in the source
-    credid: "200c2dab-036b-48a3-a824-1f4257be94ff", // jenkins id for deployer key for this project
+    credid: "bot-ci-dgm-rsa", // jenkins id for deployer key for this project
     
     // calculated settings
     branch: 'master',           // can we get this as a parameter?
