@@ -81,7 +81,7 @@ public class AuthenticationResource {
      *             Thanks Nimbus for bleeding your API :-(
      */
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({ MediaType.TEXT_HTML, MediaType.APPLICATION_JSON })
     public static Response authorizationRequest(@Context UriInfo ui, @Context HttpServletRequest request)
             throws JOSEException {
         LOGGER.debug("authorizationRequest GET called");
@@ -90,7 +90,7 @@ public class AuthenticationResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces({ MediaType.TEXT_HTML })
+    @Produces({ MediaType.TEXT_HTML, MediaType.APPLICATION_JSON })
     public static Response authorizationRequest(MultivaluedMap<String, String> formParams,
             @Context HttpServletRequest request) throws JOSEException {
         LOGGER.debug("authorizationRequest POST called");
