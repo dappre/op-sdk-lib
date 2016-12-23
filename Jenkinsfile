@@ -1,7 +1,5 @@
 #!/usr/bin/env groovy
 
-import nl.qiy.jenkins.GlobalLib;
-
 def config = updateConfig {
     update = 'micro';             // needs to be set here in the source
 }
