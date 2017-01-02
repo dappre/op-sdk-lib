@@ -84,6 +84,9 @@ public class IDToken implements Serializable {
 
     /**
      * Constructor for IDToken
+     * 
+     * @param userImpl
+     *            user that this token is for
      */
     public IDToken(OAuthUser userImpl) {
         super();
@@ -227,6 +230,7 @@ public class IDToken implements Serializable {
      * Signs a JWT token with the first approprate key it finds
      * 
      * @param idToken
+     *            claims set to sign
      * @return see description
      */
     private static SignedJWT signToken(JWTClaimsSet idToken) {
@@ -295,7 +299,10 @@ public class IDToken implements Serializable {
     }
 
     /**
+     * Simple setter for accessToken
+     * 
      * @param at
+     *            access token to set
      */
     public void setAccessToken(String at) {
         accessToken = at;
