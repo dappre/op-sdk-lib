@@ -19,8 +19,6 @@
 
 package nl.qiy.oic.op.service.spi;
 
-import java.security.PrivateKey;
-
 import com.nimbusds.jose.jwk.JWKSet;
 
 /**
@@ -30,22 +28,6 @@ import com.nimbusds.jose.jwk.JWKSet;
  * @since 3 mei 2016
  */
 public interface SecretStore extends ServiceProviderInterface {
-
-    /**
-     * Returns the secret that is needed to initiate connections from the Node. If the implementation doesn't know the
-     * private key, it will return null to pass control to the next implementation.
-     * 
-     * @return see description
-     */
-    String getNodePassword();
-
-    /**
-     * Returns the private key for access to the node. If the implementation doesn't know the private key, it will
-     * return null to pass control to the next implementation.
-     * 
-     * @return see description
-     */
-    PrivateKey getNodePrivateKey();
 
     /**
      * returns a complete JWK description (both public and private)

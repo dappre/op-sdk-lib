@@ -19,8 +19,6 @@
 
 package nl.qiy.oic.op.service;
 
-import java.security.PrivateKey;
-
 import com.nimbusds.jose.jwk.JWKSet;
 
 import nl.qiy.oic.op.service.spi.SecretStore;
@@ -35,36 +33,6 @@ public enum SecretService implements LoadingService {
     INSTANCE;
 
     private final FCFSServiceLoaderWrapper<SecretStore> loader = new FCFSServiceLoaderWrapper<>(SecretStore.class);
-
-    /**
-     * Retrieves the password to initiate connections with the node. If not present it will throw an
-     * {@link IllegalStateException}
-     * 
-     * @return see description
-     */
-    public static String getNodePassword() {
-        // @formatter:off
-        return INSTANCE
-                .loader
-                .get(SecretStore::getNodePassword)
-                .orElseThrow(IllegalStateException::new);
-        // @formatter:on
-    }
-
-    /**
-     * Retrieves the private key needed to access the node. If not present it will throw an
-     * {@link IllegalStateException}
-     * 
-     * @return see description
-     */
-    public static PrivateKey getPrivateKey() {
-        // @formatter:off
-        return INSTANCE
-                .loader
-                .get(SecretStore::getNodePrivateKey)
-                .orElseThrow(IllegalStateException::new);
-        // @formatter:on
-    }
 
     /**
      * @param type
