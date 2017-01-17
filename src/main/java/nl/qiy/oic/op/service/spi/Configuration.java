@@ -26,10 +26,6 @@ package nl.qiy.oic.op.service.spi;
  * @since 2 mei 2016
  */
 public interface Configuration extends ServiceProviderInterface {
-    static final String NODE_ID = "node-id";
-    static final String NODE_ENDPOINT = "node-endpoint";
-    static final String SIGNATURE = "signature";
-    static final String REGISTER_CALLBACK_URI = "register-callback-uri";
     static final String ISS = "iss";
     static final String BASE_URI = "base-uri";
 
