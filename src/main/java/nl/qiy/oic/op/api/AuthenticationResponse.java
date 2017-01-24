@@ -90,8 +90,7 @@ public class AuthenticationResponse {
             return Response.ok(page, MediaType.TEXT_HTML).build();
         }
         // else
-        // return Response.seeOther(getRedirectUri(params, inputs)).build();
-        return Response.status(Response.Status.FOUND).location(getRedirectUri(params, inputs)).build();
+        return Response.seeOther(getRedirectUri(params, inputs)).build();
     }
 
     private static URI getRedirectUri(Map<String, String> params, AuthenticationRequest inputs) {
