@@ -50,7 +50,7 @@ public class OAuthExceptionMapper implements ExceptionMapper<Throwable> {
     @Override
     public Response toResponse(Throwable exception) {
         String logKey = Long.toString(ThreadLocalRandom.current().nextLong());
-        LOGGER.warn("Error handling a request: {}", logKey, exception);
+        LOGGER.warn("Error handling a request: {}", logKey);
 
         AuthenticationRequest inputs = AuthenticationRequest.fromStorage();
         ResponseBuilder result;
@@ -59,7 +59,7 @@ public class OAuthExceptionMapper implements ExceptionMapper<Throwable> {
             // standard validation errors, report them back to the caller
             result = reportError(inputs, (InputException) exception);
         } else {
-            LOGGER.warn("caught Exception, reporting error");
+            LOGGER.warn("caught Exception, reporting error", exception);
             // we did not expect these, so do not give out information to the caller, to prevent exposing more than we
             // should.
             InputException ie = new InputException(ErrorCode.SERVER_ERROR, "Unknown server error");
