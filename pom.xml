@@ -112,7 +112,7 @@
 		<dependency>
 			<groupId>com.nimbusds</groupId>
 			<artifactId>nimbus-jose-jwt</artifactId>
-			<version>4.39</version>
+			<version>4.39.2</version>
 		</dependency>
 
 		<!-- bean validation with less dependencies and better performance than 
