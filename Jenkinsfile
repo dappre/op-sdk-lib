@@ -2,7 +2,7 @@
 
 def libLegacy = [
     remote:           'ssh://git@code.in.digital-me.nl:2222/DEVops/Jenkins.git',
-    branch:           'stable',
+    branch:           'master',
     credentialsId:    'bot-ci-dgm-rsa',
 ]
 
