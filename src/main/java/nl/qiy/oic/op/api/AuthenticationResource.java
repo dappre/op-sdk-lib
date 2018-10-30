@@ -43,8 +43,6 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nimbusds.jose.JOSEException;
-
 import nl.qiy.oic.op.api.param.Prompt;
 import nl.qiy.oic.op.domain.IDToken;
 import nl.qiy.oic.op.domain.OAuthUser;
@@ -77,13 +75,10 @@ public class AuthenticationResource {
      * @param request
      *            the request that originated this call
      * @return a (redirect to a?) page where the user can authenticate herself
-     * @throws JOSEException
-     *             Thanks Nimbus for bleeding your API :-(
      */
     @GET
     @Produces({ MediaType.TEXT_HTML, MediaType.APPLICATION_JSON })
-    public static Response authorizationRequest(@Context UriInfo ui, @Context HttpServletRequest request)
-            throws JOSEException {
+    public static Response authorizationRequest(@Context UriInfo ui, @Context HttpServletRequest request) {
         LOGGER.debug("authorizationRequest GET called");
         return handleAuthNRequest(ui.getQueryParameters(), request.getSession());
     }
@@ -92,7 +87,7 @@ public class AuthenticationResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({ MediaType.TEXT_HTML, MediaType.APPLICATION_JSON })
     public static Response authorizationRequest(MultivaluedMap<String, String> formParams,
-            @Context HttpServletRequest request) throws JOSEException {
+            @Context HttpServletRequest request) {
         LOGGER.debug("authorizationRequest POST called");
         return handleAuthNRequest(formParams, request.getSession());
     }
@@ -130,11 +125,8 @@ public class AuthenticationResource {
      * @param session
      *            the session belonging to the request that originated this call
      * @return see description
-     * @throws JOSEException
-     *             when something goes wrong with JWT/JWS/JWE processing
      */
-    private static Response handleAuthNRequest(MultivaluedMap<String, String> params, @Context HttpSession session)
-            throws JOSEException {
+    private static Response handleAuthNRequest(MultivaluedMap<String, String> params, @Context HttpSession session) {
         AuthenticationRequest inputs = new AuthenticationRequest(params, VALIDATOR_FACTORY.getValidator());
         LOGGER.debug("successfully parsed user input: {}", inputs);
 

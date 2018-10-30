@@ -97,7 +97,7 @@ public class DecoratingServiceLoaderWrapper<T extends ServiceProviderInterface> 
             R newResult = func.apply(serviceProvider);
             result = combinator.apply(serviceProvider).apply(newResult, result);
         }
-        LOGGER.debug("{} result found", result == null ? "no" : "a");
+        LOGGER.debug("result found: {}", result == null);
         return result;
     }
 }

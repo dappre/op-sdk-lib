@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -403,7 +404,7 @@ public class OpenIDProviderMetadata {
             .stream()
             .filter(KeyUsePredicate.ENC)
             .map(k -> k.getAlgorithm() == null ? null : k.getAlgorithm().toString())
-            .filter(a -> a != null)
+            .filter(Objects::nonNull)
             .collect(Collectors.toSet());
         // @formatter:on
     }
@@ -415,7 +416,7 @@ public class OpenIDProviderMetadata {
             .stream()
             .filter(KeyUsePredicate.SIG)
             .map(k -> k.getAlgorithm() == null ? null : k.getAlgorithm().toString())
-            .filter(a -> a != null)
+            .filter(Objects::nonNull)
             .collect(Collectors.toSet());
         // @formatter:on
     }

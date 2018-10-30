@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -112,7 +113,7 @@
 		<dependency>
 			<groupId>com.nimbusds</groupId>
 			<artifactId>nimbus-jose-jwt</artifactId>
-			<version>4.39.2</version>
+			<version>6.2</version>
 		</dependency>
 
 		<!-- bean validation with less dependencies and better performance than 
@@ -120,7 +121,7 @@
 		<dependency>
 			<groupId>org.apache.bval</groupId>
 			<artifactId>bval-jsr</artifactId>
-			<version>1.1.2</version>
+			<version>2.0.0</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
@@ -129,11 +130,17 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
 		<!-- Spock for testing (requires Groovy) -->
 		<dependency>
 			<groupId>org.spockframework</groupId>
 			<artifactId>spock-core</artifactId>
-			<version>1.1-groovy-2.4</version>
+			<version>1.2-groovy-2.5</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -154,19 +161,19 @@
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
-			<version>2.0.1</version>
+			<version>2.1.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
-			<version>1.1.0.Final</version>
+			<version>2.0.1.Final</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
+			<version>4.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- adding this dependency because databind includes a vulnerable one, 
@@ -174,13 +181,13 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>2.7.8</version>
+			<version>2.9.7</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.7.8</version>
+			<version>2.9.7</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.fasterxml.jackson.core</groupId>

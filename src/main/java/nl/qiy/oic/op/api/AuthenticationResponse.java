@@ -59,7 +59,7 @@ public class AuthenticationResponse {
      */
     private static final String UTF8 = StandardCharsets.UTF_8.name();
 
-    private static ThreadLocal<SecureRandom> RANDOMS = ThreadLocal.withInitial(SecureRandom::new);
+    private static final ThreadLocal<SecureRandom> RANDOMS = ThreadLocal.withInitial(SecureRandom::new);
 
     /**
      * Constructor for AuthenticationResponse
